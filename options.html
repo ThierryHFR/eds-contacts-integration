@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>EDS Contacts Integration</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1>EDS Contacts Integration</h1>
+    <p>Téléchargement du helper :</p>
+    <p>
+      <a
+         href="https://github.com/ThierryHFR/eds-contacts-helper/releases"
+         target="_blank">
+         https://github.com/ThierryHFR/eds-contacts-helper/releases
+      </a>
+    </p>
+    <h3>Installation</h3>
+    <pre>
+		sudo apt install \
+		  python3 \
+		  python3-gi \
+		  gir1.2-edataserver-1.2 \
+		  gir1.2-ebook-1.2 \
+		  gir1.2-ebookcontacts-1.2
+
+		unzip eds-contacts-helper-*.zip
+		cd eds-contacts-helper
+		./install-native-helper.sh
+    </pre> 
+    <p>Utilise ce bouton pour vérifier que le helper Native Messaging est installé et peut lire Evolution Data Server.</p>
+    <button id="test-helper">Tester le helper</button>
+    <button id="sync-now">Synchroniser maintenant</button>
+    <pre id="result">En attente…</pre>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
