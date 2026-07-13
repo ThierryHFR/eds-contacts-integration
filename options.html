@@ -8,31 +8,58 @@
 <body>
   <main>
     <h1>EDS Contacts Integration</h1>
-    <p>Téléchargement du helper :</p>
-    <p>
-      <a
-         href="https://github.com/ThierryHFR/eds-contacts-helper/releases"
-         target="_blank">
-         https://github.com/ThierryHFR/eds-contacts-helper/releases
-      </a>
-    </p>
-    <h3>Installation</h3>
-    <pre>
-		sudo apt install \
-		  python3 \
-		  python3-gi \
-		  gir1.2-edataserver-1.2 \
-		  gir1.2-ebook-1.2 \
-		  gir1.2-ebookcontacts-1.2
+    <p class="version">Version 2.0.0</p>
 
-		unzip eds-contacts-helper-*.zip
-		cd eds-contacts-helper
-		./install-native-helper.sh
-    </pre> 
-    <p>Utilise ce bouton pour vérifier que le helper Native Messaging est installé et peut lire Evolution Data Server.</p>
-    <button id="test-helper">Tester le helper</button>
-    <button id="sync-now">Synchroniser maintenant</button>
-    <pre id="result">En attente…</pre>
+    <section>
+      <h2>Helper local requis</h2>
+      <p>
+        L’extension ne peut pas accéder seule à Evolution Data Server. Installez d’abord
+        <a href="https://github.com/ThierryHFR/eds-contacts-helper/releases" target="_blank">EDS Contacts Helper</a>.
+      </p>
+      <details>
+        <summary>Afficher les commandes d’installation</summary>
+        <pre>sudo apt install python3 python3-gi \
+  gir1.2-edataserver-1.2 \
+  gir1.2-ebook-1.2 \
+  gir1.2-ebookcontacts-1.2
+
+unzip eds-contacts-helper-*.zip
+cd eds-contacts-helper
+./install-native-helper.sh</pre>
+      </details>
+    </section>
+
+    <form id="settings-form">
+      <section>
+        <h2>Consentement et synchronisation</h2>
+        <label class="setting consent">
+          <input id="sync-consent" type="checkbox">
+          <span>J’autorise l’extension à échanger localement les fiches de mes contacts avec EDS Contacts Helper afin de les synchroniser. Aucun contact n’est envoyé sur Internet par l’extension ou le helper.</span>
+        </label>
+        <label class="setting">
+          <input id="sync-enabled" type="checkbox">
+          <span>Activer la synchronisation automatique EDS → Thunderbird</span>
+        </label>
+        <label class="setting">
+          <input id="reverse-enabled" type="checkbox">
+          <span>Copier également dans EDS les nouveaux contacts créés dans le carnet « Evolution » de Thunderbird</span>
+        </label>
+        <label class="setting warning">
+          <input id="delete-missing" type="checkbox">
+          <span>Supprimer dans Thunderbird les contacts précédemment synchronisés qui ont disparu d’EDS</span>
+        </label>
+        <p class="notice">Les modifications et suppressions effectuées dans Thunderbird ne sont pas encore propagées vers EDS.</p>
+        <button id="save-settings" type="submit" class="primary">Enregistrer les paramètres</button>
+      </section>
+    </form>
+
+    <section>
+      <h2>Diagnostic</h2>
+      <p>Le test lit les contacts EDS uniquement après votre consentement.</p>
+      <button id="test-helper" type="button">Tester le helper</button>
+      <button id="sync-now" type="button">Synchroniser maintenant</button>
+      <pre id="result" aria-live="polite">Chargement des paramètres…</pre>
+    </section>
   </main>
   <script src="options.js"></script>
 </body>

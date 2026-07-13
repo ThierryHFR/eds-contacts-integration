@@ -1,13 +1,16 @@
 "use strict";
 
 const PREFS = {
-  version: 161,
+  version: 200,
   addressBookName: "Evolution",
   contactMap: {},
   contactHashes: {},
   pendingThunderbirdContactIds: [],
   pendingThunderbirdContacts: {},
-  reverseSyncEnabled: true,
+  syncConsentGranted: false,
+  syncEnabled: false,
+  reverseSyncEnabled: false,
+  deleteMissingContacts: false,
   helperName: "eds_contacts_helper",
   watchIntervalSeconds: 10,
   startupDelaySeconds: 20,
@@ -40,10 +43,18 @@ async function ensurePrefs() {
       contactHashes: existing.contactHashes || {},
       pendingThunderbirdContactIds: existing.pendingThunderbirdContactIds || [],
       pendingThunderbirdContacts: existing.pendingThunderbirdContacts || {},
-      reverseSyncEnabled: existing.reverseSyncEnabled !== false,
+      // A new explicit consent is required when migrating to version 2.0.0.
+      syncConsentGranted: false,
+      syncEnabled: false,
+      reverseSyncEnabled: false,
+      deleteMissingContacts: false,
       watchIntervalSeconds: Math.max(5, Number(existing.watchIntervalSeconds || PREFS.watchIntervalSeconds))
     });
   }
+}
+
+function syncIsAuthorized(prefs) {
+  return prefs.syncConsentGranted === true && prefs.syncEnabled === true;
 }
 
 async function connectHelper() {
@@ -76,7 +87,9 @@ function onNativeMessage(message) {
   }
   if (message.event === "edsChanged") {
     log(`EDS change event from helper: ${message.reason || "changed"}`);
-    runEdsToThunderbird("eds-event");
+    messenger.storage.local.get().then(prefs => {
+      if (syncIsAuthorized(prefs)) runEdsToThunderbird("eds-event");
+    });
     return;
   }
   if (message.event === "watchStarted") {
@@ -108,8 +121,10 @@ async function nativeCall(action, payload = {}) {
 
 async function startNativeWatch() {
   const prefs = await messenger.storage.local.get();
+  if (!syncIsAuthorized(prefs)) return false;
   const intervalSeconds = Math.max(5, Number(prefs.watchIntervalSeconds || PREFS.watchIntervalSeconds));
   await nativeCall("watch", { intervalSeconds });
+  return true;
 }
 
 async function getOrCreateAddressBook(name) {
@@ -191,8 +206,12 @@ async function syncContactsToThunderbird(contacts) {
   }
   for (const [edsUid, thunderbirdContactId] of Object.entries(contactMap)) {
     if (!currentEdsUids.has(edsUid)) {
-      await deleteThunderbirdContact(thunderbirdContactId, edsUid);
-      delete contactMap[edsUid]; delete contactHashes[edsUid]; deletedCount++;
+      if (prefs.deleteMissingContacts === true) {
+        await deleteThunderbirdContact(thunderbirdContactId, edsUid);
+        delete contactMap[edsUid]; delete contactHashes[edsUid]; deletedCount++;
+      } else {
+        warn(`EDS contact ${edsUid} is missing; Thunderbird contact retained because deletion propagation is disabled`);
+      }
     }
   }
   await messenger.storage.local.set({ contactMap, contactHashes });
@@ -219,6 +238,11 @@ function scheduleTimer(kind, delaySeconds, fn) {
 }
 
 async function runEdsToThunderbird(reason) {
+  const prefs = await messenger.storage.local.get();
+  if (!syncIsAuthorized(prefs)) {
+    warn(`EDS->Thunderbird (${reason}) ignored: synchronization is not authorized and enabled`);
+    return false;
+  }
   return runLocked(`EDS->Thunderbird (${reason})`, async () => {
     captureThunderbirdChanges = false;
     log(`EDS->Thunderbird started (${reason})`);
@@ -234,6 +258,7 @@ async function runEdsToThunderbird(reason) {
 async function runThunderbirdToEds(reason) {
   return runLocked(`Thunderbird->EDS (${reason})`, async () => {
     const prefs = await messenger.storage.local.get();
+    if (!syncIsAuthorized(prefs)) { log("Thunderbird->EDS disabled: synchronization is not authorized and enabled"); return 0; }
     if (prefs.reverseSyncEnabled === false) { log("Thunderbird->EDS disabled by preference"); return 0; }
     const pending = prefs.pendingThunderbirdContactIds || [];
     const pendingData = prefs.pendingThunderbirdContacts || {};
@@ -287,6 +312,7 @@ async function queueThunderbirdContactForEds(contactNode) {
       log(`Ignoring extension-created/internal contact ${contactNode.id}`); return;
     }
     const prefs = await messenger.storage.local.get();
+    if (!syncIsAuthorized(prefs)) { log("Thunderbird->EDS capture disabled until the user explicitly enables synchronization"); return; }
     if (prefs.reverseSyncEnabled === false) { log("Thunderbird->EDS capture disabled by preference"); return; }
     const addressBookId = await getOrCreateAddressBook(prefs.addressBookName || PREFS.addressBookName);
     if (contactNode.parentId && contactNode.parentId !== addressBookId) { log(`Ignoring contact ${contactNode.id}: not in Evolution address book`); return; }
@@ -316,7 +342,12 @@ async function start() {
   if (started) return;
   started = true;
   await ensurePrefs();
-  log("Starting contacts sync service - v1.6.1 Native Messaging persistent event mode + immediate vCard capture");
+  const prefs = await messenger.storage.local.get();
+  log("Starting EDS Contacts Integration 2.0.0");
+  if (!syncIsAuthorized(prefs)) {
+    log("Synchronization is disabled until explicit consent is granted in the extension settings");
+    return;
+  }
   try {
     const ping = await nativeCall("ping");
     log(`Native helper available: ${ping.version || "unknown"}`);
@@ -332,8 +363,44 @@ start().catch(e => error("Startup failed", e));
 
 messenger.runtime.onMessage.addListener(async (message) => {
   if (!message || !message.type) return undefined;
+  if (message.type === "getSettings") {
+    const prefs = await messenger.storage.local.get();
+    return {
+      ok: true,
+      settings: {
+        syncConsentGranted: prefs.syncConsentGranted === true,
+        syncEnabled: prefs.syncEnabled === true,
+        reverseSyncEnabled: prefs.reverseSyncEnabled === true,
+        deleteMissingContacts: prefs.deleteMissingContacts === true
+      }
+    };
+  }
+  if (message.type === "saveSettings") {
+    const requested = message.settings || {};
+    const syncConsentGranted = requested.syncConsentGranted === true;
+    const syncEnabled = syncConsentGranted && requested.syncEnabled === true;
+    const reverseSyncEnabled = syncEnabled && requested.reverseSyncEnabled === true;
+    const deleteMissingContacts = syncEnabled && requested.deleteMissingContacts === true;
+    await messenger.storage.local.set({ syncConsentGranted, syncEnabled, reverseSyncEnabled, deleteMissingContacts });
+    if (syncEnabled) {
+      try {
+        await nativeCall("ping");
+        await startNativeWatch();
+      } catch (err) {
+        return { ok: false, error: `Paramètres enregistrés, mais le helper est indisponible : ${err && err.message ? err.message : String(err)}` };
+      }
+    } else if (port) {
+      port.disconnect();
+      port = null;
+    }
+    return { ok: true, message: syncEnabled ? "Synchronisation activée." : "Synchronisation désactivée." };
+  }
   if (message.type === "testHelper") {
     try {
+      const prefs = await messenger.storage.local.get();
+      if (prefs.syncConsentGranted !== true) {
+        return { ok: false, error: "Le consentement est requis avant de lire les contacts EDS avec le helper." };
+      }
       const ping = await nativeCall("ping");
       const diagnostics = await nativeCall("diagnostics");
       let listContacts;
@@ -349,8 +416,15 @@ messenger.runtime.onMessage.addListener(async (message) => {
   }
   if (message.type === "syncNow") {
     try {
-      await runEdsToThunderbird("manual-options");
-      return { ok: true, message: "Synchronisation EDS -> Thunderbird lancée." };
+      const prefs = await messenger.storage.local.get();
+      if (!syncIsAuthorized(prefs)) {
+        return { ok: false, error: "Activez d’abord la synchronisation dans les paramètres." };
+      }
+      const completed = await runEdsToThunderbird("manual-options");
+      if (completed !== true) {
+        return { ok: false, error: "La synchronisation n’a pas pu être terminée. Consultez la console de l’extension." };
+      }
+      return { ok: true, message: "Synchronisation EDS -> Thunderbird terminée." };
     } catch (err) {
       return { ok: false, error: err && err.message ? err.message : String(err) };
     }

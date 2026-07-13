@@ -1,15 +1,20 @@
 {
   "manifest_version": 3,
-  "author": "Thierry Huchard / generated prototype",
+  "author": "Thierry Huchard",
   "browser_specific_settings": {
     "gecko": {
-      "id": "eds-contacts-integration-v162@thierryh.local",
-      "strict_min_version": "136.0"
+      "id": "thierryhfr.eds-contacts-integration@addons.thunderbird.net",
+      "strict_min_version": "140.0"
     }
   },
-  "name": "EDS Contacts Integration v166 event-driven",
-  "description": "Synchronise les contacts Evolution Data Server avec Thunderbird via Native Messaging event-driven, avec test du helper.",
-  "version": "1.6.6",
+  "name": "EDS Contacts Integration",
+  "description": "Synchronise les contacts Evolution Data Server avec Thunderbird au moyen d’un helper local installé séparément.",
+  "version": "2.0.0",
+  "icons": {
+    "16": "icons/eds-contacts.svg",
+    "32": "icons/eds-contacts.svg",
+    "64": "icons/eds-contacts.svg"
+  },
   "permissions": [
     "storage",
     "addressBooks",
