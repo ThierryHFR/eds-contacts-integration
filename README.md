@@ -47,7 +47,7 @@ Contact vCards are exchanged only between Thunderbird and the locally installed 
 
 ## Current status
 
-Version 2.0.0 is experimental. Back up important address books before enabling deletion propagation.
+Version 2.0.1 is experimental. Back up important address books before enabling deletion propagation.
 
 ## License
 

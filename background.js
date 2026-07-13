@@ -350,7 +350,7 @@ async function start() {
   started = true;
   await ensurePrefs();
   const prefs = await messenger.storage.local.get();
-  log("Starting EDS Contacts Integration 2.0.0");
+  log("Starting EDS Contacts Integration 2.0.1");
   if (!syncIsAuthorized(prefs)) {
     log("Synchronization is disabled until explicit consent is granted in the extension settings");
     return;
