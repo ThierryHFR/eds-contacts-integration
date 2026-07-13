@@ -1,63 +1,53 @@
-# eds-contacts-integration
+# EDS Contacts Integration
 
-Thunderbird extension for bidirectional contact synchronization with Evolution Data Server (EDS).
+Thunderbird extension for synchronizing contacts with Evolution Data Server (EDS) on Linux.
 
 ## Features
 
-* Synchronize contacts between Thunderbird and Evolution Data Server
-* Event-driven EDS → Thunderbird updates
-* Thunderbird → EDS contact synchronization
-* Native Messaging integration
-* Automatic Evolution address book creation/restoration
-* Linux desktop integration
-* Thunderbird 140 ESR compatible
+* EDS → Thunderbird contact creation and updates
+* Optional propagation of EDS deletions to Thunderbird
+* Optional creation in EDS of new contacts added to the Thunderbird `Evolution` address book
+* Event-driven change detection through a local Native Messaging helper
+* Explicit consent and synchronization disabled by default
+* Thunderbird 140 ESR compatibility
+
+Changes and deletions made in Thunderbird are not currently propagated to EDS.
 
 ## Architecture
 
-`eds-contacts-integration` works together with the external project:
-
-```text
-eds-contacts-helper
-```
-
-The extension communicates with the helper using Mozilla Native Messaging.
-
 ```text
 Thunderbird Extension
-        ⇅ Native Messaging
+        ⇅ Native Messaging (local JSON messages)
 eds-contacts-helper
-        ⇅ EDS / libebook / DBus
+        ⇅ EDS / libebook / D-Bus
 Evolution Data Server
 ```
 
-This architecture avoids loading GNOME / Evolution libraries directly inside Thunderbird, improving stability and preventing crashes.
+The helper runs outside Thunderbird so that GNOME and Evolution libraries are not loaded into Thunderbird.
 
 ## Requirements
 
-* Thunderbird 140 ESR or newer
 * Linux
+* Thunderbird 140 ESR or newer
 * Evolution Data Server
-* `eds-contacts-helper`
+* [`eds-contacts-helper`](https://github.com/ThierryHFR/eds-contacts-helper)
 
 ## Installation
 
-1. Install the Thunderbird extension
-2. Install the native helper:
-   [https://github.com/ThierryHFR/eds-contacts-helper/releases](https://github.com/ThierryHFR/eds-contacts-helper/releases)
-3. Restart Thunderbird
+1. Install the native helper from its [release page](https://github.com/ThierryHFR/eds-contacts-helper/releases).
+2. Install the Thunderbird extension.
+3. Open the extension settings, review the local data exchange disclosure and grant consent if you agree.
+4. Explicitly enable synchronization and save the settings.
 
-## Current Status
+The extension can be installed without the helper, but synchronization and diagnostics will not work until the helper is installed.
 
-Experimental but functional.
+## Data and privacy
 
-Implemented:
+Contact vCards are exchanged only between Thunderbird and the locally installed helper. Neither component sends contacts, telemetry or analytics over the network. See [PRIVACY.md](PRIVACY.md).
 
-* EDS → Thunderbird synchronization
-* Thunderbird → EDS synchronization
-* Event-driven updates
-* Native Messaging integration
-* Helper diagnostics
-* Manual synchronization support
+## Current status
+
+Version 2.0.0 is experimental. Back up important address books before enabling deletion propagation.
 
 ## License
 
