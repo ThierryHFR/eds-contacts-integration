@@ -3,7 +3,7 @@
   "author": "Thierry Huchard",
   "browser_specific_settings": {
     "gecko": {
-      "id": "thierryhfr.eds-contacts-integration@addons.thunderbird.net",
+      "id": "eds-contacts-integration-v162@thierryh.local",
       "strict_min_version": "140.0"
     }
   },
