@@ -1,5 +1,7 @@
 "use strict";
 
+import { recoverStoredContactMappings } from "./contact-mapping.mjs";
+
 const PREFS = {
   version: 200,
   addressBookName: "Evolution",
@@ -182,6 +184,11 @@ async function syncContactsToThunderbird(contacts) {
   const addressBookId = await getOrCreateAddressBook(prefs.addressBookName || PREFS.addressBookName);
   const contactMap = prefs.contactMap || {};
   const contactHashes = prefs.contactHashes || {};
+  const existingContacts = await messenger.addressBooks.contacts.list(addressBookId);
+  const recoveredUids = recoverStoredContactMappings(existingContacts, contactMap, contactHashes);
+  if (recoveredUids.length) {
+    log(`Recovered ${recoveredUids.length} stored contact mapping(s) from Thunderbird vCard UIDs`);
+  }
   const currentEdsUids = new Set();
   let createdCount = 0, updatedCount = 0, unchangedCount = 0, deletedCount = 0, remappedCount = 0;
   for (const contact of contacts || []) {
