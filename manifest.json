@@ -9,7 +9,7 @@
   },
   "name": "EDS Contacts Integration",
   "description": "Synchronise les contacts Evolution Data Server avec Thunderbird au moyen d’un helper local installé séparément.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "icons": {
     "16": "icons/eds-contacts.svg",
     "32": "icons/eds-contacts.svg",
