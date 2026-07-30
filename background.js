@@ -339,18 +339,12 @@ if (messenger.addressBooks && messenger.addressBooks.contacts && messenger.addre
   messenger.addressBooks.contacts.onCreated.addListener(contactNode => { queueThunderbirdContactForEds(contactNode); });
 }
 
-if (messenger.runtime && messenger.runtime.onMessage) {
-  messenger.runtime.onMessage.addListener(message => {
-    if (message && message.command === "sync-now") runEdsToThunderbird("manual-message");
-  });
-}
-
 async function start() {
   if (started) return;
   started = true;
   await ensurePrefs();
   const prefs = await messenger.storage.local.get();
-  log("Starting EDS Contacts Integration 2.0.1");
+  log("Starting EDS Contacts Integration 2.0.2");
   if (!syncIsAuthorized(prefs)) {
     log("Synchronization is disabled until explicit consent is granted in the extension settings");
     return;
@@ -368,8 +362,9 @@ async function start() {
 
 start().catch(e => error("Startup failed", e));
 
-messenger.runtime.onMessage.addListener(async (message) => {
-  if (!message || !message.type) return undefined;
+const RESPONSE_MESSAGE_TYPES = new Set(["getSettings", "saveSettings", "testHelper", "syncNow"]);
+
+async function handleRuntimeMessage(message) {
   if (message.type === "getSettings") {
     const prefs = await messenger.storage.local.get();
     return {
@@ -437,4 +432,29 @@ messenger.runtime.onMessage.addListener(async (message) => {
     }
   }
   return undefined;
-});
+}
+
+function runtimeMessageListener(message, _sender, sendResponse) {
+  if (message && message.command === "sync-now") {
+    runEdsToThunderbird("manual-message")
+      .catch(err => error("Manual message synchronization failed", err));
+    return false;
+  }
+
+  if (!message || !RESPONSE_MESSAGE_TYPES.has(message.type)) {
+    return false;
+  }
+
+  handleRuntimeMessage(message)
+    .then(sendResponse)
+    .catch(err => {
+      error("Runtime message handling failed", err);
+      sendResponse({
+        ok: false,
+        error: err && err.message ? err.message : String(err)
+      });
+    });
+  return true;
+}
+
+messenger.runtime.onMessage.addListener(runtimeMessageListener);

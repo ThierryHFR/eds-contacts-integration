@@ -9,7 +9,7 @@ Thunderbird extension for synchronizing contacts with Evolution Data Server (EDS
 * Optional creation in EDS of new contacts added to the Thunderbird `Evolution` address book
 * Event-driven change detection through a local Native Messaging helper
 * Explicit consent and synchronization disabled by default
-* Thunderbird 140 ESR compatibility
+* Thunderbird 153+ compatibility
 
 Changes and deletions made in Thunderbird are not currently propagated to EDS.
 
@@ -28,7 +28,7 @@ The helper runs outside Thunderbird so that GNOME and Evolution libraries are no
 ## Requirements
 
 * Linux
-* Thunderbird 140 ESR or newer
+* Thunderbird 153 or newer
 * Evolution Data Server
 * [`eds-contacts-helper`](https://github.com/ThierryHFR/eds-contacts-helper)
 
@@ -47,7 +47,7 @@ Contact vCards are exchanged only between Thunderbird and the locally installed 
 
 ## Current status
 
-Version 2.0.1 is experimental. Back up important address books before enabling deletion propagation.
+Version 2.0.2 is experimental. Back up important address books before enabling deletion propagation.
 
 ## License
 
