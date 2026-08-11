@@ -9,6 +9,17 @@ const deleteInput = document.getElementById("delete-missing");
 const testButton = document.getElementById("test-helper");
 const syncButton = document.getElementById("sync-now");
 
+function localize() {
+  document.documentElement.lang = messenger.i18n.getUILanguage();
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = messenger.i18n.getMessage(element.dataset.i18n) || element.textContent;
+  }
+}
+
+function message(key) {
+  return messenger.i18n.getMessage(key) || key;
+}
+
 function show(value) {
   result.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
 }
@@ -28,7 +39,7 @@ function updateControls() {
 
 async function send(type, extra = {}) {
   try {
-    show("Exécution…");
+    show(message("executing"));
     const response = await messenger.runtime.sendMessage({ type, ...extra });
     show(response);
     return response;
@@ -48,7 +59,7 @@ async function loadSettings() {
   reverseInput.checked = settings.reverseSyncEnabled === true;
   deleteInput.checked = settings.deleteMissingContacts === true;
   updateControls();
-  show("Paramètres chargés. Le helper n’est contacté que lorsque vous l’autorisez.");
+  show(message("settingsLoaded"));
 }
 
 consentInput.addEventListener("change", updateControls);
@@ -70,4 +81,5 @@ form.addEventListener("submit", async event => {
 testButton.addEventListener("click", () => send("testHelper"));
 syncButton.addEventListener("click", () => send("syncNow"));
 
+localize();
 loadSettings();

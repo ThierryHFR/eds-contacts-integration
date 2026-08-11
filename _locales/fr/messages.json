@@ -1,0 +1,22 @@
+{
+  "extensionName": { "message": "Intégration des contacts EDS" },
+  "extensionDescription": { "message": "Synchronise les contacts d’Evolution Data Server avec Thunderbird au moyen d’un helper local installé séparément." },
+  "localHelperRequired": { "message": "Helper local requis" },
+  "helperIntro": { "message": "L’extension ne peut pas accéder seule à Evolution Data Server. Installez" },
+  "helperIntroEnd": { "message": "d’abord." },
+  "showInstallCommands": { "message": "Afficher les commandes d’installation" },
+  "consentAndSync": { "message": "Consentement et synchronisation" },
+  "consentLabel": { "message": "J’autorise l’extension à échanger localement mes fiches de contacts avec EDS Contacts Helper afin de les synchroniser. Aucun contact n’est envoyé sur Internet par l’extension ou le helper." },
+  "enableSyncLabel": { "message": "Activer la synchronisation automatique EDS → Thunderbird" },
+  "reverseSyncLabel": { "message": "Copier également dans EDS les nouveaux contacts créés dans le carnet « Evolution » de Thunderbird" },
+  "deleteMissingLabel": { "message": "Supprimer dans Thunderbird les contacts précédemment synchronisés qui ont disparu d’EDS" },
+  "thunderbirdChangesNotice": { "message": "Les modifications et suppressions effectuées dans Thunderbird ne sont pas encore propagées vers EDS." },
+  "saveSettings": { "message": "Enregistrer les paramètres" },
+  "diagnostics": { "message": "Diagnostic" },
+  "diagnosticsConsent": { "message": "Le test lit les contacts EDS uniquement après votre consentement." },
+  "testHelper": { "message": "Tester le helper" },
+  "syncNow": { "message": "Synchroniser maintenant" },
+  "loadingSettings": { "message": "Chargement des paramètres…" },
+  "executing": { "message": "Exécution…" },
+  "settingsLoaded": { "message": "Paramètres chargés. Le helper n’est contacté que lorsque vous l’autorisez." }
+}
