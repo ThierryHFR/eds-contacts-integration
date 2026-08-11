@@ -22,6 +22,12 @@ if ! command -v zip >/dev/null 2>&1; then
     exit 1
 fi
 
+locales_dir="$project_dir/_locales"
+if [ ! -d "$locales_dir" ] || ! find "$locales_dir" -mindepth 2 -maxdepth 2 -type f -name messages.json -print -quit | grep -q .; then
+    echo "The _locales directory with messages.json files is required to build the XPI." >&2
+    exit 1
+fi
+
 mkdir -p "$(dirname -- "$output")"
 temporary_dir=$(mktemp -d "${TMPDIR:-/tmp}/eds-contacts-integration-xpi.XXXXXX")
 temporary_xpi="$temporary_dir/extension.xpi"

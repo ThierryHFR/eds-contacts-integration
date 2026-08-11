@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>EDS Contacts Integration</title>
@@ -7,17 +7,17 @@
 </head>
 <body>
   <main>
-    <h1>EDS Contacts Integration</h1>
+    <h1 data-i18n="extensionName">EDS Contacts Integration</h1>
     <p class="version">Version 2.0.3</p>
 
     <section>
-      <h2>Helper local requis</h2>
+      <h2 data-i18n="localHelperRequired">Local helper required</h2>
       <p>
-        L’extension ne peut pas accéder seule à Evolution Data Server. Installez d’abord
-        <a href="https://github.com/ThierryHFR/eds-contacts-helper/releases" target="_blank">EDS Contacts Helper</a>.
+        <span data-i18n="helperIntro">The extension cannot access Evolution Data Server on its own. Install</span>
+        <a href="https://github.com/ThierryHFR/eds-contacts-helper/releases" target="_blank">EDS Contacts Helper</a><span data-i18n="helperIntroEnd">first.</span>
       </p>
       <details>
-        <summary>Afficher les commandes d’installation</summary>
+        <summary data-i18n="showInstallCommands">Show installation commands</summary>
         <pre>sudo apt install python3 python3-gi \
   gir1.2-edataserver-1.2 \
   gir1.2-ebook-1.2 \
@@ -31,34 +31,34 @@ cd eds-contacts-helper
 
     <form id="settings-form">
       <section>
-        <h2>Consentement et synchronisation</h2>
+        <h2 data-i18n="consentAndSync">Consent and synchronization</h2>
         <label class="setting consent">
           <input id="sync-consent" type="checkbox">
-          <span>J’autorise l’extension à échanger localement les fiches de mes contacts avec EDS Contacts Helper afin de les synchroniser. Aucun contact n’est envoyé sur Internet par l’extension ou le helper.</span>
+          <span data-i18n="consentLabel">I authorize the extension to exchange my contact cards locally with EDS Contacts Helper for synchronization. Neither the extension nor the helper sends contacts over the Internet.</span>
         </label>
         <label class="setting">
           <input id="sync-enabled" type="checkbox">
-          <span>Activer la synchronisation automatique EDS → Thunderbird</span>
+          <span data-i18n="enableSyncLabel">Enable automatic EDS → Thunderbird synchronization</span>
         </label>
         <label class="setting">
           <input id="reverse-enabled" type="checkbox">
-          <span>Copier également dans EDS les nouveaux contacts créés dans le carnet « Evolution » de Thunderbird</span>
+          <span data-i18n="reverseSyncLabel">Also copy new contacts created in Thunderbird’s “Evolution” address book to EDS</span>
         </label>
         <label class="setting warning">
           <input id="delete-missing" type="checkbox">
-          <span>Supprimer dans Thunderbird les contacts précédemment synchronisés qui ont disparu d’EDS</span>
+          <span data-i18n="deleteMissingLabel">Delete previously synchronized contacts from Thunderbird when they disappear from EDS</span>
         </label>
-        <p class="notice">Les modifications et suppressions effectuées dans Thunderbird ne sont pas encore propagées vers EDS.</p>
-        <button id="save-settings" type="submit" class="primary">Enregistrer les paramètres</button>
+        <p class="notice" data-i18n="thunderbirdChangesNotice">Changes and deletions made in Thunderbird are not currently propagated to EDS.</p>
+        <button id="save-settings" type="submit" class="primary" data-i18n="saveSettings">Save settings</button>
       </section>
     </form>
 
     <section>
-      <h2>Diagnostic</h2>
-      <p>Le test lit les contacts EDS uniquement après votre consentement.</p>
-      <button id="test-helper" type="button">Tester le helper</button>
-      <button id="sync-now" type="button">Synchroniser maintenant</button>
-      <pre id="result" aria-live="polite">Chargement des paramètres…</pre>
+      <h2 data-i18n="diagnostics">Diagnostics</h2>
+      <p data-i18n="diagnosticsConsent">The test reads EDS contacts only after you give consent.</p>
+      <button id="test-helper" type="button" data-i18n="testHelper">Test helper</button>
+      <button id="sync-now" type="button" data-i18n="syncNow">Synchronize now</button>
+      <pre id="result" aria-live="polite" data-i18n="loadingSettings">Loading settings…</pre>
     </section>
   </main>
   <script src="options.js"></script>
