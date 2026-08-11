@@ -18,7 +18,6 @@
   "permissions": [
     "storage",
     "addressBooks",
-    "alarms",
     "nativeMessaging"
   ],
   "background": {
