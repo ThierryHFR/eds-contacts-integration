@@ -75,7 +75,7 @@ Questions and issue reports can be submitted through the [project repository](ht
 
 ## Current status
 
-Version 2.0.2 is experimental. Back up important address books before enabling deletion propagation.
+Version 2.0.5 is experimental. Back up important address books before enabling deletion propagation.
 
 ## License
 
