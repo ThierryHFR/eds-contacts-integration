@@ -45,6 +45,8 @@ The extension can be installed without the helper, but synchronization and diagn
 
 Contact vCards are exchanged only between Thunderbird and the locally installed helper. Neither component sends contacts, telemetry or analytics over the network. See [PRIVACY.md](PRIVACY.md).
 
+The Native Messaging protocol, the exchanged data, and the consent requirements are documented in [NATIVE_MESSAGING.md](NATIVE_MESSAGING.md).
+
 ## Current status
 
 Version 2.0.2 is experimental. Back up important address books before enabling deletion propagation.

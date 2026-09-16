@@ -16,6 +16,8 @@ Contact data is exchanged locally between Thunderbird and EDS Contacts Helper th
 
 The options page contains a normal link to the helper release page on GitHub. Opening that link is an explicit user action and is not part of synchronization.
 
+For a detailed description of the Native Messaging connection, including the actions and fields exchanged with the helper, see [NATIVE_MESSAGING.md](NATIVE_MESSAGING.md).
+
 ## Local logs
 
 EDS Contacts Helper writes technical diagnostic information to `~/.cache/eds-contacts-helper.log`. Logs can include EDS address-book names, technical errors and contact counts, but the helper does not intentionally log complete vCards, contact names, email addresses or contact identifiers.
